@@ -2,8 +2,8 @@
 #define _PHONEBOOK_H
 
 #define MAX_LAST_NAME_SIZE 16
-
-#define OPT 1
+#define MAX_HASH_TABLE_SIZE 1024
+#define HASH 1
 
 typedef struct __PHONE_BOOK_ENTRY {
     char lastName[MAX_LAST_NAME_SIZE];
@@ -25,7 +25,9 @@ typedef struct __PHONE_BOOK_LASTNAME {
     struct __PHONE_BOOK_LASTNAME *pNext;
 } entry;
 
+unsigned long djb2(char *str);
 entry *findName(char lastName[], entry *pHead);
 entry *append(char lastName[], entry *e);
+void freeList(entry *e);
 
 #endif

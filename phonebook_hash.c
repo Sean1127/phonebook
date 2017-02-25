@@ -5,6 +5,18 @@
 
 #include "phonebook_hash.h"
 
+unsigned long djb2(char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str)) {
+        hash = ((hash << 5) + hash) + c;
+        str++;
+    }
+
+    return hash;
+}
+
 entry *findName(char lastName[], entry *pHead)
 {
     while (pHead != NULL) {
@@ -22,4 +34,13 @@ entry *append(char lastName[], entry *e)
     strcpy(e->lastName, lastName);
     e->pNext = NULL;
     return e;
+}
+
+void freeList(entry *e)
+{
+    if (e) {
+        freeList(e->pNext);
+        free(e);
+    }
+    return;
 }

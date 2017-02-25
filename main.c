@@ -8,6 +8,8 @@
 
 #ifdef OPT
 #define OUT_FILE "opt.txt"
+#elif defined(HASH)
+#define OUT_FILE "hash.txt"
 #else
 #define OUT_FILE "orig.txt"
 #endif
@@ -29,6 +31,82 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
 
 int main(int argc, char *argv[])
 {
+    /* hash main */
+#if defined(HASH)
+    FILE *fp;
+    int i = 0;
+    char line[MAX_LAST_NAME_SIZE];
+    struct timespec start, end;
+    double cpu_time1, cpu_time2;
+    unsigned long key;
+//  int index;
+
+    /* check file opening */
+    fp = fopen(DICT_FILE, "r");
+    if (fp == NULL) {
+        printf("cannot open the file\n");
+        return -1;
+    }
+
+    /* build the entry */
+    entry pHead[MAX_HASH_TABLE_SIZE], *e[MAX_HASH_TABLE_SIZE];
+    for (i = 0; i < MAX_HASH_TABLE_SIZE; ++i) {
+        e[i] = &pHead[i];
+        e[i]->pNext = NULL;
+    }
+
+#if defined(__GNUC__)
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+#endif
+    clock_gettime(CLOCK_REALTIME, &start);
+    while (fgets(line, sizeof(line), fp)) {
+        while (line[i] != '\0')
+            i++;
+        line[i - 1] = '\0';
+        key = djb2(line) % MAX_HASH_TABLE_SIZE;
+        i = 0;
+        e[key] = append(line, e[key]);
+    }
+    clock_gettime(CLOCK_REALTIME, &end);
+    cpu_time1 = diff_in_second(start, end);
+
+    /* close file as soon as possible */
+    fclose(fp);
+
+    /* the givn last name to find */
+    char input[MAX_LAST_NAME_SIZE] = "zyxel";
+    key = djb2(input) % MAX_HASH_TABLE_SIZE;
+    for (i = 0; i < MAX_HASH_TABLE_SIZE; ++i) {
+        e[i] = &pHead[i];
+    }
+
+    assert(findName(input, e[key]) &&
+           "Did you implement findName() in " IMPL "?");
+    assert(0 == strcmp(findName(input, e[key])->lastName, "zyxel"));
+
+#if defined(__GNUC__)
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+#endif
+    /* compute the execution time */
+    clock_gettime(CLOCK_REALTIME, &start);
+    findName(input, e[key]);
+    clock_gettime(CLOCK_REALTIME, &end);
+    cpu_time2 = diff_in_second(start, end);
+
+    FILE *output = fopen(OUT_FILE, "a");
+    fprintf(output, "append() findName() %lf %lf\n", cpu_time1, cpu_time2);
+    fclose(output);
+
+    printf("execution time of append() : %lf sec\n", cpu_time1);
+    printf("execution time of findName() : %lf sec\n", cpu_time2);
+
+    for (i = 0; i < MAX_LAST_NAME_SIZE; i++) {
+        freeList(pHead[i].pNext);
+    }
+
+    return 0;
+    /* hash main */
+#else
     FILE *fp;
     int i = 0;
     char line[MAX_LAST_NAME_SIZE];
@@ -99,4 +177,5 @@ int main(int argc, char *argv[])
     free(pHead);
 
     return 0;
+#endif
 }
