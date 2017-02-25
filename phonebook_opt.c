@@ -21,5 +21,7 @@ entry *append(char lastName[], entry *e)
     e = e->pNext;
     strcpy(e->lastName, lastName);
     e->pNext = NULL;
+    e->pFull = (full *) malloc(sizeof(full));
+    strcpy(e->pFull->lastName, lastName);
     return e;
 }
