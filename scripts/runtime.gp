@@ -8,6 +8,8 @@ set output 'runtime.png'
 plot [:][:0.150]'output.txt' using 2:xtic(1) with histogram title 'original', \
 '' using 3:xtic(1) with histogram title 'optimized'  , \
 '' using 4:xtic(1) with histogram title 'hash', \
-'' using ($0-0.075):($2+0.005):2 with labels title ' ', \
-'' using ($0+0.125):($3+0.005):3 with labels title ' ', \
-'' using ($0+0.325):($4+0.005):4 with labels title ' '
+'' using 5:xtic(1) with histogram title 'memory pool', \
+'' using ($0-0.150):($2+0.015):2 with labels title ' ', \
+'' using ($0+0.050):($3+0.015):3 with labels title ' ', \
+'' using ($0+0.250):($4+0.010):4 with labels title ' ', \
+'' using ($0+0.500):($5+0.005):5 with labels title ' '

@@ -3,7 +3,7 @@
 
 #define MAX_LAST_NAME_SIZE 16
 #define MAX_HASH_TABLE_SIZE 1024
-#define HASH 1
+#define POOL
 
 typedef struct __PHONE_BOOK_ENTRY {
     char lastName[MAX_LAST_NAME_SIZE];
@@ -25,8 +25,15 @@ typedef struct __PHONE_BOOK_LASTNAME {
     struct __PHONE_BOOK_LASTNAME *pNext;
 } entry;
 
+typedef struct __POOL {
+    char *next;
+    char *end;
+} pool;
+
+pool *initPool(size_t size);
+void *allocPool(pool *p, size_t size);
 unsigned long djb2(char *str);
 entry *findName(char lastName[], entry *pHead);
-entry *append(char lastName[], entry *e);
+entry *append(char lastName[], entry *e, pool *p);
 
 #endif

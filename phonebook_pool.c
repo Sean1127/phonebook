@@ -3,7 +3,22 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "phonebook_hash.h"
+#include "phonebook_pool.h"
+
+pool *initPool(size_t size)
+{
+    pool *p = (pool *) malloc(size + sizeof(pool));
+    p->next = (char *) &p[1];
+    p->end = p->next + size;
+    return p;
+}
+
+void *allocPool(pool *p, size_t size)
+{
+    void *tmp = (void *) p->next;
+    p->next += size;
+    return tmp;
+}
 
 unsigned long djb2(char *str)
 {
@@ -27,9 +42,9 @@ entry *findName(char lastName[], entry *pHead)
     return NULL;
 }
 
-entry *append(char lastName[], entry *e)
+entry *append(char lastName[], entry *e, pool *p)
 {
-    e->pNext = malloc(sizeof(entry));
+    e->pNext = allocPool(p, sizeof(entry));
     e = e->pNext;
     strcpy(e->lastName, lastName);
     e->pNext = NULL;
