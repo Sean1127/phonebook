@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     struct timespec start, end;
     double cpu_time1, cpu_time2;
     unsigned long key;
-//  int index;
+    pool *p;
 
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
@@ -47,9 +47,12 @@ int main(int argc, char *argv[])
         printf("cannot open the file\n");
         return -1;
     }
+    /* build memory pool */
+    p = initPool(sizeof(entry)*350000);
 
     /* build the entry */
     entry pHead[MAX_HASH_TABLE_SIZE], *e[MAX_HASH_TABLE_SIZE];
+    printf("size of entry : %lu bytes\n", sizeof(entry));
     for (i = 0; i < MAX_HASH_TABLE_SIZE; ++i) {
         e[i] = &pHead[i];
         e[i]->pNext = NULL;
@@ -65,7 +68,7 @@ int main(int argc, char *argv[])
         line[i - 1] = '\0';
         key = djb2(line) % MAX_HASH_TABLE_SIZE;
         i = 0;
-        e[key] = append(line, e[key]);
+        e[key] = append(line, e[key], p);
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
@@ -100,9 +103,7 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
-    for (i = 0; i < MAX_LAST_NAME_SIZE; i++) {
-        freeList(pHead[i].pNext);
-    }
+    free(p);
 
     return 0;
     /* hash main */

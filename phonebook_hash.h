@@ -25,9 +25,16 @@ typedef struct __PHONE_BOOK_LASTNAME {
     struct __PHONE_BOOK_LASTNAME *pNext;
 } entry;
 
+typedef struct __POOL {
+    char *next;
+    char *end;
+} pool;
+
+pool *initPool(size_t size);
+void *allocPool(pool *p, size_t size);
 unsigned long djb2(char *str);
 entry *findName(char lastName[], entry *pHead);
-entry *append(char lastName[], entry *e);
+entry *append(char lastName[], entry *e, pool *p);
 void freeList(entry *e);
 
 #endif
