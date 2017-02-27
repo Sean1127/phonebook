@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 #endif
 
     /* the givn last name to find */
-    char input[MAX_LAST_NAME_SIZE] = "zyxel";
+    char input[MAX_LAST_NAME_SIZE] = "zyoba";
 #if defined(HASH) || defined(POOL)
     key = djb2(input) % MAX_HASH_TABLE_SIZE;
     for (i = 0; i < MAX_HASH_TABLE_SIZE; ++i) {
@@ -119,11 +119,11 @@ int main(int argc, char *argv[])
 #if defined(HASH) || defined(POOL)
     assert(findName(input, e[key]) &&
            "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, e[key])->lastName, "zyxel"));
+    assert(0 == strcmp(findName(input, e[key])->lastName, "zyoba"));
 #else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+    assert(0 == strcmp(findName(input, e)->lastName, "zyoba"));
 #endif
 
 #if defined(__GNUC__)
